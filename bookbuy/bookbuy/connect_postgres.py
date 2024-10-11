@@ -1,4 +1,5 @@
 import pandas as pd
+import datetime
 import numpy as np
 from pymongo import MongoClient
 from sqlalchemy import create_engine
@@ -76,8 +77,9 @@ data['Num_Page'] = pd.to_numeric(data['Num_Page'], errors='coerce')
 
 # Chuyển đổi cột 'Weight' sang kiểu số
 data['Weight'] = pd.to_numeric(data['Weight'], errors='coerce')
-
-
+# chuyen doi cot Publish_date thành kiểu datetime 
+str1 = "2020/07/22"
+data['Publish_date']= datetime.datetime.strptime(str1, "%Y/%m/%d")
 
 # Chuyển đổi ObjectId thành chuỗi
 data['_id'] = data['_id'].astype(str)
