@@ -68,6 +68,8 @@ print(data.head())
 # 4. Xử lý dữ liệu
 #xóa các dòng có dữ liệu bị thiếu
 data.dropna(inplace=True)
+# Xoa dữ liệu bị trùng lặp
+data.drop_duplicates(inplace=True)
 # Chuyển đổi cột 'price' sang kiểu số
 data['Market_Price'] = pd.to_numeric(data['Market_Price'], errors='coerce')
 # Chuyển đổi cột 'price' sang kiểu số
