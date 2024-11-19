@@ -1,6 +1,6 @@
 import scrapy
 from bookbuy.items import BookbuyItem
-
+import re
 class MybookbuySpider(scrapy.Spider):
     name = "mybookbuy"
     allowed_domains = ["bookbuy.vn"]
@@ -9,7 +9,7 @@ class MybookbuySpider(scrapy.Spider):
     def start_requests(self):
         urlRelative = 'https://bookbuy.vn/sach/nhung-nguoi-dan-chu-xep-thuyen-tai-ban-2024--p'
         count = 0
-        for page in range(52059, 75000):
+        for page in range(120000, 134260): 
             count = count + 1
             url = urlRelative + str(page)+'.html'
             print(url)
@@ -21,35 +21,45 @@ class MybookbuySpider(scrapy.Spider):
     # Extract and clean book name
         item= BookbuyItem()
         name = response.xpath('//*[@id="bb-body"]/div[1]/div[1]/div[2]/div/div[2]/div/div[1]/h1/text()').get().strip()
-
+       
     # Extract and clean author
         author = response.xpath('//*[@id="bb-body"]/div[1]/div[1]/div[2]/div/div[2]/div/div[1]/div[1]/div[1]/a/h2/text()').get().strip()
-
+       
     # Extract and clean price
         price = response.xpath('//*[@id="bb-body"]/div[1]/div[1]/div[2]/div/div[2]/div/div[1]/div[3]/p[1]/text()').get().strip()
         price = price.replace(' đ', '').replace(',', '').replace('\t', ' ').strip()
-
+  
     # Extract and clean market price
         market_price = response.xpath('//*[@id="bb-body"]/div[1]/div[1]/div[2]/div/div[2]/div/div[1]/div[3]/p[2]/text()').get().strip()
         market_price = market_price.replace('Giá thị trường: ', '').replace(' đ', '').replace(',', '').replace('\t', ' ').strip()
-
+   
     # Extract and clean status
         status = response.xpath('//*[@id="bb-body"]/div[1]/div[1]/div[2]/div/div[2]/div/div[1]/div[3]/div[4]/p[2]/text()').get().strip()
         status = status.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').strip()
-
+     
     # Extract and clean NXB
         nxb = response.xpath('//*[@id="bb-body"]/div[1]/div[1]/div[3]/div[5]/div[1]/div[1]/div/div/div/ul/li[1]/a/text()').get().strip()
         nxb = nxb.replace('\t', ' ').strip().replace('\t', ' ').strip()
-
+       
     # Extract and clean Publisher
         Publisher = response.xpath('//*[@id="bb-body"]/div[1]/div[1]/div[3]/div[5]/div[1]/div[1]/div/div/div/ul/li[3]/a/text()').get().strip()
         Publisher = Publisher.replace('\t', ' ').strip().replace('\t', ' ').strip()
 
+
     # Extract and clean date
         date = response.xpath('//*[@id="bb-body"]/div[1]/div[1]/div[3]/div[5]/div[1]/div[1]/div/div/div/ul/li[2]/text()').get().strip()
+        
         date = date.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').strip()
+        date=re.sub(r'[A-Za-z]', '', date).replace('Đ', ' ').replace('a', ' ').replace('n', ' ').replace('g', ' ')
+       
         x = date.split()
+        
         publish_date = x[3]
+        if(publish_date=="ậ"):
+            publish_date="20/10/2023"
+
+        
+
 
     # Extract and clean numpage
         numpage = response.xpath('//*[@id="bb-body"]/div[1]/div[1]/div[3]/div[5]/div[1]/div[1]/div/div/div/ul/li[5]/span/text()').get().strip()
@@ -59,7 +69,7 @@ class MybookbuySpider(scrapy.Spider):
     # Extract and clean weight
         weight = response.xpath('//*[@id="bb-body"]/div[1]/div[1]/div[3]/div[5]/div[1]/div[1]/div/div/div/ul/li[6]/span/text()').get().strip()
         weight = weight.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').strip()
-        x = weight.split()
+        x=weight.split()
         Kg = x[0]
 
     # Extract and clean content
@@ -75,8 +85,10 @@ class MybookbuySpider(scrapy.Spider):
             content=content4
         else :
             content= content3
+           
         content = content.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').strip()
         item['Book_name']=name
+
         item['Author']=author
         item['Price']=price
         item['Market_Price']=market_price
