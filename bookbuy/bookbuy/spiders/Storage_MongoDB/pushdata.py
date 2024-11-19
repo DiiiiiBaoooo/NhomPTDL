@@ -13,8 +13,8 @@ import os
 
 client = MongoClient('mongodb://mongodb:27017/')
 
-db = client['dbmybookbuy']
-collection = db['book']
+db = client['dbmybookbuy2']
+collection = db['book2']
 
 relative_path = Path(os.path.join(os.getcwd(), '..', 'jsondatabookbuy.json'))
 

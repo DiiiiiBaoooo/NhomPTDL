@@ -20,7 +20,7 @@ def connect_mongodb():
     try:
         client = MongoClient('mongodb://localhost:27017/')
         
-        db = client['mybookbuy']
+        db = client['dbmybookbuy']
 
         collection = db['book']
 

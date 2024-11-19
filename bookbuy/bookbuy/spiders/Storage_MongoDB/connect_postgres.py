@@ -1,6 +1,5 @@
 import pandas as pd
 import datetime
-from datetime import datetime
 import numpy as np
 from pymongo import MongoClient
 from sqlalchemy import create_engine
@@ -9,7 +8,7 @@ from psycopg2 import sql
 import sys
 import os
 
-# Hàm để tạo database nếu chưa tồn tại
+# Hàm để tạo database 
 def create_database(dbname, user, password, host='localhost', port='5432'):
     try:
         # Kết nối đến database mặc định 'postgres'
@@ -17,7 +16,7 @@ def create_database(dbname, user, password, host='localhost', port='5432'):
         conn.autocommit = True  # Cho phép các lệnh như CREATE DATABASE không cần transaction
         cur = conn.cursor()
 
-        # Kiểm tra xem database đã tồn tại chưa
+        # Kiểm tra xem database 
         cur.execute("SELECT 1 FROM pg_catalog.pg_database WHERE datname = %s", (dbname,))
         exists = cur.fetchone()
 
@@ -73,6 +72,7 @@ data.dropna(inplace=True)
 data.drop_duplicates(inplace=True)
 # Chuyển đổi cột 'price' sang kiểu số
 data['Market_Price'] = pd.to_numeric(data['Market_Price'], errors='coerce')
+
 # Chuyển đổi cột 'price' sang kiểu số
 data['Price'] = pd.to_numeric(data['Price'], errors='coerce')
 # Chuyển đổi cột 'Num_Page' sang kiểu số
@@ -81,36 +81,28 @@ data['Num_Page'] = pd.to_numeric(data['Num_Page'], errors='coerce')
 # Chuyển đổi cột 'Weight' sang kiểu số
 data['Weight'] = pd.to_numeric(data['Weight'], errors='coerce')
 # chuyen doi cot Publish_date thành kiểu datetime 
+str1 = "2020/07/22"
 
-# Xóa các giá trị không hợp lệ (nếu cần)
-data = data[data['Publish_date'].str.match(r'\d{2}/\d{2}/\d{4}', na=False)]
-
-# Chuyển đổi
-data['Publish_date'] = pd.to_datetime(data['Publish_date'], format="%d/%m/%Y")
-
-
-
+data['Publish_date']= datetime.datetime.strptime(str1, "%Y/%m/%d")
 
 # Chuyển đổi ObjectId thành chuỗi
 data['_id'] = data['_id'].astype(str)
 
 # 5. Xóa dữ liệu cũ trong collection 'nhatot_daxuly' để tránh lỗi duplicate key
-client = MongoClient("mongodb://localhost:27017/")  # Thay đổi connection string nếu cần
-db2 = client['dbmybookbuy_xuly']  # Tên cơ sở dữ liệu
-db2['dbmybookbuy_xuly'].delete_many({})
+db['dbmybookbuy1'].delete_many({})
 
 # 6. Lưu dữ liệu đã xử lý vào MongoDB
 processed_data = data.to_dict('records')  # Chuyển đổi DataFrame thành danh sách các dict
-db2['dbmybookbuy_xuly'].insert_many(processed_data)  # Lưu vào một collection mới
+db['dbmybookbuy1'].insert_many(processed_data)  # Lưu vào một collection mới
 
-print("\nDữ liệu đã được lưu vào collection 'mybookbuy_daxuly' trong MongoDB.")
+print("\nDữ liệu đã được lưu vào collection 'dbmybookbuy1' trong MongoDB.")
 
 # 7. Tạo database PostgreSQL nếu chưa tồn tại
 postgres_user = 'postgres'          # Thay bằng tên người dùng PostgreSQL của bạn 
 postgres_password = '1'   # Thay bằng mật khẩu PostgreSQL của bạn 
 postgres_host = 'localhost'        # Thường là 'localhost' nếu chạy trên máy cục bộ
 postgres_port = '5432'             # Cổng mặc định của PostgreSQL
-postgres_db = 'bookbuy'      # Tên cơ sở dữ liệu PostgreSQL
+postgres_db = 'dbmybookbuy1'      # Tên cơ sở dữ liệu PostgreSQL
 
 # Cài đặt superuser để cấp quyền (thường là 'postgres')
 superuser = 'postgres'             # Thay bằng tên người dùng superuser
@@ -131,7 +123,7 @@ engine = create_engine(connection_string)
 
 try:
     # Lưu DataFrame vào PostgreSQL
-    data.to_sql('bookbuy', engine, if_exists='replace', index=False)
+    data.to_sql('dbmybookbuy1', engine, if_exists='replace', index=False)
     print("\nDữ liệu đã được lưu vào PostgreSQL trong bảng 'dbmybookbuy1'.")
 except Exception as e:
     print(f"Đã xảy ra lỗi khi lưu dữ liệu vào PostgreSQL: {e}")
