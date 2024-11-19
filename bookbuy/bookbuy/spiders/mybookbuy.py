@@ -48,10 +48,17 @@ class MybookbuySpider(scrapy.Spider):
 
     # Extract and clean date
         date = response.xpath('//*[@id="bb-body"]/div[1]/div[1]/div[3]/div[5]/div[1]/div[1]/div/div/div/ul/li[2]/text()').get().strip()
+        
         date = date.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').strip()
-        date=re.sub(r'[A-Za-z]', '', date).replace('Đ', ' ')
+        date=re.sub(r'[A-Za-z]', '', date).replace('Đ', ' ').replace('a', ' ').replace('n', ' ').replace('g', ' ')
+       
         x = date.split()
+        
         publish_date = x[3]
+        if(publish_date=="ậ"):
+            publish_date="20/10/2023"
+
+        
 
 
     # Extract and clean numpage

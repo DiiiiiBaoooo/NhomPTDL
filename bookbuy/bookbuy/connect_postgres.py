@@ -96,12 +96,12 @@ data['_id'] = data['_id'].astype(str)
 
 # 5. Xóa dữ liệu cũ trong collection 'nhatot_daxuly' để tránh lỗi duplicate key
 client = MongoClient("mongodb://localhost:27017/")  # Thay đổi connection string nếu cần
-db2 = client['dbmybookbuy_xuly']  # Tên cơ sở dữ liệu
-db2['dbmybookbuy_xuly'].delete_many({})
+db2 = client['dbmybookbuy_daxuly']  # Tên cơ sở dữ liệu
+db2['dbmybookbuy_daxuly'].delete_many({})
 
 # 6. Lưu dữ liệu đã xử lý vào MongoDB
 processed_data = data.to_dict('records')  # Chuyển đổi DataFrame thành danh sách các dict
-db2['dbmybookbuy_xuly'].insert_many(processed_data)  # Lưu vào một collection mới
+db2['dbmybookbuy_daxuly'].insert_many(processed_data)  # Lưu vào một collection mới
 
 print("\nDữ liệu đã được lưu vào collection 'mybookbuy_daxuly' trong MongoDB.")
 
@@ -110,7 +110,7 @@ postgres_user = 'postgres'          # Thay bằng tên người dùng PostgreSQL
 postgres_password = '1'   # Thay bằng mật khẩu PostgreSQL của bạn 
 postgres_host = 'localhost'        # Thường là 'localhost' nếu chạy trên máy cục bộ
 postgres_port = '5432'             # Cổng mặc định của PostgreSQL
-postgres_db = 'bookbuy'      # Tên cơ sở dữ liệu PostgreSQL
+postgres_db = 'books'      # Tên cơ sở dữ liệu PostgreSQL
 
 # Cài đặt superuser để cấp quyền (thường là 'postgres')
 superuser = 'postgres'             # Thay bằng tên người dùng superuser
@@ -131,7 +131,7 @@ engine = create_engine(connection_string)
 
 try:
     # Lưu DataFrame vào PostgreSQL
-    data.to_sql('bookbuy', engine, if_exists='replace', index=False)
-    print("\nDữ liệu đã được lưu vào PostgreSQL trong bảng 'dbmybookbuy1'.")
+    data.to_sql('books', engine, if_exists='replace', index=False)
+    print("\nDữ liệu đã được lưu vào PostgreSQL trong bảng 'books'.")
 except Exception as e:
     print(f"Đã xảy ra lỗi khi lưu dữ liệu vào PostgreSQL: {e}")
